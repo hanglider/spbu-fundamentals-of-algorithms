@@ -4,7 +4,8 @@ import matplotlib.pyplot as plt
 TEST_GRAPH_FILES = [
     "graph_1_wo_cycles.edgelist",
     "graph_2_wo_cycles.edgelist",
-    "graph_3_wo_cycles.edgelist"
+    "graph_3_wo_cycles.edgelist",
+    "graph_4_wo_cycles.edgelist"
 ]
 
 def has_cycles(g: nx.DiGraph) -> bool:

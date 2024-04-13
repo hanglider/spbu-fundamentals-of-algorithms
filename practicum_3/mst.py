@@ -12,9 +12,26 @@ def prim_mst(G: nx.Graph, start_node="0") -> set[tuple[Any, Any]]:
     rest_set = set(G.nodes())  # set of nodes not yet included into MST
     mst_edges = set()  # set of edges constituting MST
 
-    ##########################
-    ### PUT YOUR CODE HERE ###
-    ##########################
+    mst_set.add(start_node)
+    rest_set.remove(start_node)
+
+    while rest_set:
+        edge_to_add = {
+            "edge" : (None, None),
+            "weight" : np.inf,
+        }
+        node_to_add = None 
+        for node in mst_set:
+            for neigh_node in G.neighbors(node):
+                if neigh_node in mst_set:
+                    continue
+                if G[node][neigh_node]["weight"] < edge_to_add["weight"]:
+                    edge_to_add["edge"] = (node, neigh_node)
+                    edge_to_add["weight"] = G[node][neigh_node]["weight"]
+                    node_to_add = neigh_node 
+        mst_edges.add(egde_to_add["edge"])
+        mst_set.add(node_to_add)
+        
 
     return mst_edges
 
