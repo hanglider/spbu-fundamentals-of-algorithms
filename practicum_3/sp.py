@@ -66,7 +66,6 @@ def dijkstra_sp(G: nx.Graph, source_node="0") -> dict[Any, list[Any]]:
             shortest_paths[neigh_node] = shortest_paths[node] + [neigh_node]
 >>>>>>> Trofimov
 
-
 def dijkstra_sp(G: nx.Graph, source_node="0") -> dict[Any, list[Any]]:
     unvisited_set = set(G.nodes())
     visited_set = set()
@@ -74,7 +73,6 @@ def dijkstra_sp(G: nx.Graph, source_node="0") -> dict[Any, list[Any]]:
     dist = {n: np.inf for n in G}
     dist[source_node] = 0
     shortest_paths[source_node] = [source_node]
-
     while unvisited_set:
         node = None
         min_dist = np.inf
