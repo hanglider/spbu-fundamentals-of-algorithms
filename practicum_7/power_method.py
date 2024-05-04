@@ -5,12 +5,20 @@ from src.common import NDArrayFloat
 
 
 def power_method(A: NDArrayFloat, n_iters: int) -> tuple[NDArrayFloat, NDArrayFloat]:
+    history_of_vector = np.zeros((n_iters))
+    history_of_sob = np.zeros((n_iters, A.shape[0]))
+    u_k = np.random.random(A.shape[0])
+    u_kk = np.zeros_like(u_k)
+    for i in range(n_iters):
+        pre_u_kk = A @ u_k
+        A_u_k_norm  = np.linalg.norm(pre_u_kk)
+        u_kk = pre_u_kk / A_u_k_norm
+        lambda_ = A_u_k_norm * u_kk[0] / u_k[0]
+        u_k = u_kk
+        history_of_vector[i] = lambda_
+        history_of_sob[i] = u_kk
 
-    ##########################
-    ### PUT YOUR CODE HERE ###
-    ##########################
-
-    pass
+    return history_of_vector, history_of_sob 
 
 
 if __name__ == "__main__":
