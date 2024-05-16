@@ -43,24 +43,22 @@ def householder_tridiagonalization_by_alicepro(A: NDArrayFloat) -> NDArrayFloat:
     return B
 
 
+def sign(x):
+    return x >= 0
+
+
 def householder_tridiagonalization(A: NDArrayFloat) -> NDArrayFloat:
-    B = np.zeros_like(A)
     n = A.shape[0]
     A_k = A.copy()
     for k in range(n - 2):
-        x_k = np.zeros((n, ))
-        x_k[k + 1] = A_k[k, k + 1]
-        y_k = np.zeros((n, ))
+        x_k = np.zeros((n,))
+        x_k[k + 1 :] = A_k[k, k + 1 :]
+        y_k = np.zeros((n,))
         y_k[k + 1] = -sign(x_k[k + 1]) * np.linalg.norm(x_k)
-
-        #########################
-        #### make code there ####
-        #########################
-
-    return 
-
-def sign(x):
-    return x >= 0
+        u_k = (x_k - y_k) / np.linalg.norm(x_k - y_k)
+        H_k = np.eye(n) - 2 * np.outer(u_k, u_k)
+        A_k = H_k @ A_k @ H_k
+    return A_k
 
 
 if __name__ == "__main__":

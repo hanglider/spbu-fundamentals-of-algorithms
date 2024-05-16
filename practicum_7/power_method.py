@@ -47,3 +47,4 @@ if __name__ == "__main__":
     ax.set_xlabel("Iteration", fontsize=12)
     ax.set_ylabel(r"$|\hat{\lambda} - \lambda|$", fontsize=12)
     plt.show()
+    print()
