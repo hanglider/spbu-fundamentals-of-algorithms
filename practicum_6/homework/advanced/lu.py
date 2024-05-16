@@ -1,18 +1,12 @@
+import os
 from collections import defaultdict
 from dataclasses import dataclass
-import os
-import yaml
 import time
-
 import numpy as np
-from numpy.typing import NDArray
 import scipy.io
 import scipy.linalg
-
-from src.linalg import get_scipy_solution
-
-
-
+import yaml
+from numpy.typing import NDArray
 
 @dataclass
 class Performance:
@@ -21,46 +15,43 @@ class Performance:
 
 
 def lu(A: NDArray, permute: bool) -> tuple[NDArray, NDArray, NDArray]:
-
     n = A.shape[0]
+    U = A.copy()
     L = np.eye(n)
-    U = np.copy(A)
     P = np.eye(n)
 
-    for k in range(n-1):
+    for i in range(n):
         if permute:
-            max_index = np.argmax(abs(U[k:, k])) + k
-            if max_index != k:
-                U[[k, max_index]] = U[[max_index, k]]
-                P[[k, max_index]] = P[[max_index, k]]
-                if k > 0:
-                    L[[k, max_index], :k] = L[[max_index, k], :k]
+            max_row = i + np.argmax(np.abs(U[i:n, i]))
+            if i != max_row:
+                U[[i, max_row]], U[[max_row, i]] = U[[max_row, i]], U[[i, max_row]].copy()
+                P[[i, max_row]], P[[max_row, i]] = P[[max_row, i]], P[[i, max_row]].copy()
+                if i > 0:
+                    L[[i, max_row], :i], L[[max_row, i], :i] = L[[max_row, i], :i], L[[i, max_row], :i].copy()
 
-        for j in range(k+1, n):
-            L[j, k] = U[j, k] / U[k, k]
-            U[j, k:] -= L[j, k] * U[k, k:]
+        for j in range(i + 1, n):
+            factor = U[j, i] / U[i, i]
+            U[j, i:] -= factor * U[i, i:]
+            L[j, i] = factor
 
-    return L, U, P
-
-
+    return P, L, U
 def solve(L: NDArray, U: NDArray, P: NDArray, b: NDArray) -> NDArray:
+    Pb = P @ b
 
     n = L.shape[0]
-
-    # Permute right vector
-    b_permuted = P.dot(b)
-
-    #(Ly = Pb)
-    y = np.zeros(n)
+    y = np.zeros_like(b)
     for i in range(n):
-        y[i] = b_permuted[i] - L[i, :i].dot(y[:i])
+        y[i] = Pb[i] - np.dot(L[i, :i], y[:i])
 
-    #(Ux = y)
-    x = np.zeros(n)
-    for i in range(n-1, -1, -1):
-        x[i] = (y[i] - U[i, i+1:].dot(x[i+1:])) / U[i, i]
+    x = np.zeros_like(b)
+    for i in range(n - 1, -1, -1):
+        x[i] = (y[i] - np.dot(U[i, i + 1:], x[i + 1:])) / U[i, i]
+
     return x
 
+def get_scipy_solution(A, b):
+    lu_and_piv = scipy.linalg.lu_factor(A)
+    return scipy.linalg.lu_solve(lu_and_piv, b)
 
 def run_test_cases(n_runs: int, path_to_homework: str) -> dict[str, Performance]:
     matrix_filenames = []

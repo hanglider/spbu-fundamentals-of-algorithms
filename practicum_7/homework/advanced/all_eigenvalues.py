@@ -18,14 +18,50 @@ class Performance:
     time: float = 0.0
     relative_error: float = 0.0
 
+def sign(x):
+    return 1 if x > 0 else -1
+
+def householder_qr(A: NDArrayFloat) -> tuple[NDArrayFloat, NDArrayFloat]:
+    n = A.shape[0]
+    Q = np.eye(n)
+
+    for i in range(n):
+        v_i:NDArrayFloat = A[i:, i].copy()
+        v_i[0] += sign(v_i[0]) * np.linalg.norm(v_i)
+        v_i = v_i.astype(float)
+        v_i /= np.linalg.norm(v_i)
+
+        H = np.eye(n)
+        H[i:, i:] -= 2.0 * np.matrix(v_i).T @ np.matrix(v_i)
+
+        A = np.dot(H, A)
+        Q = np.dot(Q, H.T)
+
+    return Q, A
+
+def wilkinson_shift(A):
+    n = A.shape[0]
+    a = A[n - 2, n - 2]
+    b = A[n - 2, n - 1]
+    c = A[n - 1, n - 1]
+    if abs(a - c) < abs(b):
+        shift = c
+    else:
+        shift = a
+    return shift
 
 def get_all_eigenvalues(A: NDArrayFloat) -> NDArrayFloat:
-
-    ##########################
-    ### PUT YOUR CODE HERE ###
-    ##########################
-
-    pass
+    n = A.shape[0]
+    E = np.eye(n)
+    n_iters = 10
+    for _ in range(n_iters):
+        shift = wilkinson_shift(A)
+        Q, R = householder_qr(A - shift * E)
+        A = R @ Q + shift * E
+        ans_proximity = np.sum(np.abs(A - np.diag(np.diag(A))))
+        if ans_proximity < 1e-16:
+            break
+    return np.diag(A)
 
 
 def run_test_cases(
