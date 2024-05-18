@@ -55,7 +55,7 @@ if __name__ == "__main__":
     # With pivoting
     L, U, P = lu(A, permute=True)
     x = solve(L, U, P, b)
-    assert np.all(np.isclose(x, [1, -7, 4])), f"The anwser {x} is not accurate enough"
+    assert np.all(np.isclose(x, [1, -7, 4]), f"The anwser {x} is not accurate enough")
     # Without pivoting
     L, U, P = lu(A, permute=False)
     x_ = solve(L, U, P, b)

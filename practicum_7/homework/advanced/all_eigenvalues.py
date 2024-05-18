@@ -9,9 +9,10 @@ import numpy as np
 import scipy.io
 import scipy.linalg
 
-from src.common import NDArrayFloat
 from src.linalg import get_numpy_eigenvalues
+from numpy.typing import NDArray
 
+NDArrayFloat = NDArray[np.float_]
 
 @dataclass
 class Performance:
@@ -34,8 +35,8 @@ def householder_qr(A: NDArrayFloat) -> tuple[NDArrayFloat, NDArrayFloat]:
         H = np.eye(n)
         H[i:, i:] -= 2.0 * np.matrix(v_i).T @ np.matrix(v_i)
 
-        A = np.dot(H, A)
-        Q = np.dot(Q, H.T)
+        A = np.dot(H, A)   #втреуг
+        Q = np.dot(Q, H.T)   
 
     return Q, A
 
@@ -57,7 +58,7 @@ def get_all_eigenvalues(A: NDArrayFloat) -> NDArrayFloat:
     for _ in range(n_iters):
         shift = wilkinson_shift(A)
         Q, R = householder_qr(A - shift * E)
-        A = R @ Q + shift * E
+        A = R @ Q + shift * E      #diag
         ans_proximity = np.sum(np.abs(A - np.diag(np.diag(A))))
         if ans_proximity < 1e3:
             break

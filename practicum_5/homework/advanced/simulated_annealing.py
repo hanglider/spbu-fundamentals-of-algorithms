@@ -109,7 +109,7 @@ if __name__ == "__main__":
     G = nx.erdos_renyi_graph(n=100, p=0.05, seed=seed)
     plot_graph(G)
 
-    n_max_iters = 10
+    n_max_iters = 100
     n_max_colors = 3
     initial_colors = np.random.randint(low=0, high=n_max_colors - 1, size=len(G.nodes))
 
