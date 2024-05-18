@@ -35,15 +35,15 @@ def lu(A: NDArray, permute: bool) -> tuple[NDArray, NDArray, NDArray]:
             L[j, i] = factor
 
     return P, L, U
-def solve(L: NDArray, U: NDArray, P: NDArray, b: NDArray) -> NDArray:
-    Pb = P @ b
 
+def solve(L: NDArray, U: NDArray, P: NDArray, b: NDArray) -> NDArray:
+    Pb = P @ b   #учет перестановок
     n = L.shape[0]
-    y = np.zeros_like(b)
+    y = np.zeros_like(b)  # Lu = Pb
     for i in range(n):
         y[i] = Pb[i] - np.dot(L[i, :i], y[:i])
 
-    x = np.zeros_like(b)
+    x = np.zeros_like(b)  # Ax = b
     for i in range(n - 1, -1, -1):
         x[i] = (y[i] - np.dot(U[i, i + 1:], x[i + 1:])) / U[i, i]
 

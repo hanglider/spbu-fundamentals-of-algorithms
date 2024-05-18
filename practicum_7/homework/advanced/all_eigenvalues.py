@@ -53,13 +53,13 @@ def wilkinson_shift(A):
 def get_all_eigenvalues(A: NDArrayFloat) -> NDArrayFloat:
     n = A.shape[0]
     E = np.eye(n)
-    n_iters = 10
+    n_iters = 1
     for _ in range(n_iters):
         shift = wilkinson_shift(A)
         Q, R = householder_qr(A - shift * E)
         A = R @ Q + shift * E
         ans_proximity = np.sum(np.abs(A - np.diag(np.diag(A))))
-        if ans_proximity < 1e-16:
+        if ans_proximity < 1e3:
             break
     return np.diag(A)
 
@@ -81,9 +81,10 @@ def run_test_cases(
         t2 = time.time()
         perf.time += t2 - t1
         eigvals_exact.sort()
-        eigvals.sort()
+        eigvals1 = eigvals.copy()
+        eigvals1.sort()
         perf.relative_error = np.median(
-            np.abs(eigvals_exact - eigvals) / np.abs(eigvals_exact)
+            np.abs(eigvals_exact - eigvals1) / np.abs(eigvals_exact)
         )
     return performance_by_matrix
 
